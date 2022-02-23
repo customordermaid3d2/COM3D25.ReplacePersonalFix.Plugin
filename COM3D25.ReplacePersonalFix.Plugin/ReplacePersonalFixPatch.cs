@@ -19,9 +19,8 @@ namespace COM3D25.ReplacePersonalFix.Plugin
             log = logger;
             config = Config;
 
-            ScriptManager_ReplacePersonal_Log = config.Bind("ScriptManager", "ReplacePersonal Log", true);
+            ScriptManager_ReplacePersonal_Log = config.Bind("ScriptManager", "ReplacePersonal Log", false);
         }
-
 
         internal static ConfigEntry<bool> ScriptManager_ReplacePersonal_Log;
 
@@ -40,20 +39,29 @@ namespace COM3D25.ReplacePersonalFix.Plugin
         [HarmonyPostfix]
         public static void ReplacePersonal_post(ref string __result, Maid[] maid_array)
         {
+            if (string.IsNullOrEmpty(__result)) return;
+            if (GameUty.IsExistFile(__result)) return;
+
             if (ScriptManager_ReplacePersonal_Log.Value)
                 log.LogMessage($"ScriptManager.ReplacePersonal_post , {maid_array.Length} , {__result}");
 
             HashSet<string> ids = new HashSet<string>(ReplacePersonalFix.personalIds);
-            while (!GameUty.IsExistFile(__result) && ids.Count > 0 && !string.IsNullOrEmpty(__result))
+            bool isFile;
+            do
             {
-                __result = ReplacePersonal( ks, ids );
+                __result = ReplacePersonal(ks, ids);
 
                 if (ScriptManager_ReplacePersonal_Log.Value)
                     log.LogMessage($"ScriptManager.ReplacePersonal_post fix , {ks} , {__result}");
             }
-            if (ids.Count==0)
+            while (isFile = !GameUty.IsExistFile(__result) && ids.Count > 0);
+            if (!isFile)
             {
                 log.LogError($"not have script : {ks}");
+            }
+            else
+            {
+                log.LogWarning($"change {ks} to {__result}");
             }
         }
 

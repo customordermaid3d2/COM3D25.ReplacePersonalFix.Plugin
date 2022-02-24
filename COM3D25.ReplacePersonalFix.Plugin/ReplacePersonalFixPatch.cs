@@ -46,7 +46,7 @@ namespace COM3D2.ReplacePersonalFix.Plugin
                 log.LogMessage($"ScriptManager.ReplacePersonal_post , {maid_array.Length} , {__result}");
 
             HashSet<string> ids = new HashSet<string>(ReplacePersonalFix.personalIds);
-            bool isFile;
+            bool isNotFile;
             do
             {
                 __result = ReplacePersonal(ks, ids);
@@ -54,8 +54,8 @@ namespace COM3D2.ReplacePersonalFix.Plugin
                 if (ScriptManager_ReplacePersonal_Log.Value)
                     log.LogMessage($"ScriptManager.ReplacePersonal_post fix , {ks} , {__result}");
             }
-            while (isFile = !GameUty.IsExistFile(__result) && ids.Count > 0);
-            if (!isFile)
+            while (isNotFile = !GameUty.IsExistFile(__result) && ids.Count > 0);
+            if (isNotFile)
             {
                 log.LogError($"not have script : {ks}");
             }

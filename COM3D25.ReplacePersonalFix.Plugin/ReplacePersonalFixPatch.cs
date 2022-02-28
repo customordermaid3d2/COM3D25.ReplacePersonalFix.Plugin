@@ -29,6 +29,7 @@ namespace COM3D2.ReplacePersonalFix.Plugin
         public static void ReplacePersonal_pre(Maid[] maid_array, string text)
         {
             ks = text;
+
             if (ScriptManager_ReplacePersonal_Log.Value)
                 log.LogMessage($"ScriptManager.ReplacePersonal_pre , {maid_array.Length} , {text}");
         }
@@ -40,7 +41,8 @@ namespace COM3D2.ReplacePersonalFix.Plugin
         public static void ReplacePersonal_post(ref string __result, Maid[] maid_array)
         {
             if (string.IsNullOrEmpty(__result)) return;
-            if (GameUty.IsExistFile(__result)) return;
+            if (IsExistFile(__result)) return;
+            log.LogWarning($"Not IsExistFile {ks} to {__result}");
 
             if (ScriptManager_ReplacePersonal_Log.Value)
                 log.LogMessage($"ScriptManager.ReplacePersonal_post , {maid_array.Length} , {__result}");
@@ -54,15 +56,22 @@ namespace COM3D2.ReplacePersonalFix.Plugin
                 if (ScriptManager_ReplacePersonal_Log.Value)
                     log.LogMessage($"ScriptManager.ReplacePersonal_post fix , {ks} , {__result}");
             }
-            while (isNotFile = !GameUty.IsExistFile(__result) && ids.Count > 0);
+            while (isNotFile = !IsExistFile(__result) && ids.Count > 0);
             if (isNotFile)
             {
-                log.LogError($"not have script : {ks}");
+                log.LogError($"Not have script : {ks}");
             }
             else
             {
-                log.LogWarning($"change {ks} to {__result}");
+                log.LogWarning($"Change {ks} to {__result}");
             }
+        }
+
+        private static bool IsExistFile(string text)
+        {
+            if (!text.EndsWith(".ks"))
+              text += ".ks";            
+            return GameUty.IsExistFile(text);
         }
 
         public static string ReplacePersonal( string text, HashSet<string> ids)

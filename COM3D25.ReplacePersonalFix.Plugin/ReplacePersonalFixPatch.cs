@@ -70,8 +70,16 @@ namespace COM3D2.ReplacePersonalFix.Plugin
         private static bool IsExistFile(string text)
         {
             if (!text.EndsWith(".ks"))
-              text += ".ks";            
-            return GameUty.IsExistFile(text);
+              text += ".ks";
+
+            if (GameUty.IsExistFile(text))
+            {
+                return true;
+            }
+            else
+            {
+                return GameUty.FileSystemOld.IsExistentFile(text);
+            }            
         }
 
         public static string ReplacePersonal( string text, HashSet<string> ids)
